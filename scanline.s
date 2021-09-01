@@ -69,9 +69,9 @@
 9:
 .endm
 
-.macro doSync  ; 4.7 microseconds
+.macro doSync  ; 4.7 microseconds = (4*16) + 11.2 cycles
     zero
-    delay4us    ; (16*4) + 11(.2)
+    delay4us
     nop
     nop
     nop
@@ -80,11 +80,11 @@
     nop
     nop
     nop ; 8
-    nop
-    nop ; 10
-    black ; 1 
+    nop ; 9
+    black 
 .endm
 
+    ; if this macro is edited, timing nops will need to calibrated in renderScanline
 .macro  mapFontSetup         ; decode the char buffer againt to the font data to fill the scanline buffer
     lds r25, counter         ; find the start row of char buffer
     subi r25, 64             ; subtract the start line of 64
@@ -170,7 +170,7 @@ newLine:
     increment r17 cursory
     incrementAndMask r17 31 rowoffset   ; rotate the view to keep up
     ret
-    ;rjmp postColIncrement
+    ;rjmp postColIncrement   ; todo: fix this or brake it some more
 
 drawChar:
     inc r18                  ; store incremented cursor x
@@ -240,11 +240,17 @@ clearLineY:
 
 renderScanline:
     zero          ; do sync but with some code hiding in there
-    delay1us      ; todo: tune the zero to black timing to 4.7 microseconds
+    delay1us      ; tuned number nops + mapFontSetup = 4.7 microseconds
     delay1us
+    nop
+    nop
+    nop
+    nop ; 4
+    nop
+    nop ; 6
     mapFontSetup
     black
-
+    
     mapFont r20,0
     mapFont r20,1
     mapFont r20,2
@@ -305,7 +311,6 @@ renderScanline:
 
 renderUpper:
     doSync
-
     checkUart
     processUart
 

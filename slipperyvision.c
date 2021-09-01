@@ -8,9 +8,6 @@
 #define USART_BAUDRATE 9600
 #define BAUD_PRESCALE (((F_CPU/(USART_BAUDRATE*16UL)))-1)
 
-#define USART_BAUDRATE38400 38400
-#define BAUD_PRESCALE38400 (((F_CPU/(USART_BAUDRATE38400*16UL)))-1)
-
 // asm functions
 void renderVerticalSync();
 void slipperyslide();
@@ -70,15 +67,6 @@ int main() {
     UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
     UBRR0H  = (BAUD_PRESCALE >> 8);
     UBRR0L  = BAUD_PRESCALE;
-
-    writeUartString("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
-    writeUartString("$PMTK251,38400*27\r\n");
-
-    UBRR0H  = (BAUD_PRESCALE38400 >> 8);
-    UBRR0L  = BAUD_PRESCALE38400;
-
-    writeUartString("\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n");
-    writeUartString("$PMTK220,200*2C\r\n");
 
     lineFunction = renderVerticalSync;
     cursory = 23;

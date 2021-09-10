@@ -19,6 +19,30 @@
      sbi 0x8, 0 ; PC0 = 1 (when PB0 = 1)
 .endm
 
+.macro cbon
+     sbi 0xb, 2
+.endm
+
+.macro cboff
+     cbi 0xb, 2
+.endm
+
+.macro cron
+     sbi 0xb, 3
+.endm
+
+.macro croff
+     cbi 0xb, 3
+.endm
+
+.macro connect
+     sbi 0xa, 3
+.endm
+
+.macro disconnect
+     cbi 0xa, 3
+.endm
+
 .macro blip
     white
     nop
@@ -45,7 +69,7 @@
     addAddressToZ uartBuffer
     st Z,r25
     subi r24,lo8(-(1))      ; uartWrite++
-    andi r24,lo8(127)       ; overrun protect
+    andi r24,127            ; overrun protect
     sts uartWrite,r24
 8:
 .endm
@@ -111,7 +135,7 @@
 
     addressToY scanlinebuffer
 
-    ldi r31, hi8(gs(fontdata))  ; upper Z
+    ldi r31, hi8(gs(fontdata))  ; upper Z - fontdata must be 512 byte aligned
     lsl r31                     ; account for program space being 16 bit aligned
     lds r25, counter
     andi r25, 7                 ; get font row number
@@ -247,7 +271,7 @@ renderScanline:
     nop
     nop ; 4
     nop
-    nop ; 6
+    nop ; 6 - my scope told me to stop here
     mapFontSetup
     black
     
@@ -275,7 +299,9 @@ renderScanline:
     mapFont r22,5
     mapFont r22,6
     mapFont r22,7 ; 24
-    
+
+    cbon
+
     addressToX scanlinebuffer
     renderByte
     renderByte
@@ -299,11 +325,21 @@ renderScanline:
     renderByte ;20
     renderByte
     renderByte
+    connect
     renderByte
     renderByte ;24
     nop
     nop
     whiteclear
+
+    cboff
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    disconnect
 
     checkUart
     checkLineFunction 0 renderLower

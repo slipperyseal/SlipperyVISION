@@ -32,7 +32,7 @@
 .endm
 
 .macro addToZ reg1, reg2
-    add r20,\reg1
+    add r30,\reg1
     adc r31,\reg2
 .endm
 
@@ -84,6 +84,11 @@
     nop ;16
 .endm
 
+.macro delay2us
+    delay1us
+    delay1us
+.endm
+
 .macro delay4us
     delay1us
     delay1us
@@ -91,7 +96,7 @@
     delay1us
 .endm
 
-.macro delay28us
+.macro delay30us
     delay4us
     delay4us
     delay4us
@@ -99,5 +104,6 @@
     delay4us
     delay4us
     delay4us
+    delay2us
 .endm
 

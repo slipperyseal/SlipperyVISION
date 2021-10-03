@@ -325,7 +325,6 @@ renderScanline:
     renderByte ;20
     renderByte
     renderByte
-    connect
     renderByte
     renderByte ;24
     nop
@@ -333,13 +332,6 @@ renderScanline:
     whiteclear
 
     cboff
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    disconnect
 
     checkUart
     checkLineFunction 0 renderLower
@@ -359,8 +351,7 @@ renderLower:
     checkUart
     processUart
 
-    checkLineFunction 56 renderVerticalSync  ; previous loop of 256 + 56 = line 312
-    clear counter
+    checkLineFunction 53 renderVerticalSyncD  ; previous loop of 256 + 56 = line 312
 
     increment r24 frame
     lsr r24            ; hacky flash cursor
@@ -373,16 +364,59 @@ renderLower:
     ret
 
     .global renderVerticalSync
-renderVerticalSync:     ; todo: this is a bit hacky, and there should be more vertical sync lines
-    delay28us
-    black
-    delay4us
+renderVerticalSync:     ; long long
     zero
-    delay28us
+    delay30us
+    black
+    delay2us
+    zero
+    delay30us
     black
 
-    increment r17 counter   ; no counter checking at the moment as there's only one line of vertical sync
-    setFunctionPointer lineFunction renderUpper
+    checkLineFunction 2 renderVerticalSyncB
+    ret
+
+renderVerticalSyncB:     ; long short
+    black
+    delay2us
+    zero
+    delay30us
+    black
+    delay2us
+    zero
+
+    checkUart
+
+    checkLineFunction 3 renderVerticalSyncC
+    ret
+
+renderVerticalSyncC:       ; short short
+    black
+    delay2us
+    zero
+    delay30us
+    black
+    delay2us
+    zero
+
+    checkUart
+
+    checkLineFunction 5 renderUpper
+    ret
+
+renderVerticalSyncD:       ; short short
+    black
+    delay2us
+    zero
+    delay30us
+    black
+    delay2us
+    zero
+
+    checkUart
+
+    checkLineFunction 56 renderVerticalSync  ; previous loop of 256 + 56 = line 312
+    clear counter
     ret
 
 .global    __vector_11 ; TIMER1_COMPA_vect1

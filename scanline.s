@@ -1,6 +1,19 @@
 
     .section .text
 
+; line       vsync markers are currently non-interlaced PAL. some devices may not like them.
+; 1        A vsync long long
+; 2          vsync long long
+; 3        B vsync long short
+; 4        C vsync short short
+; 5          vsync short short
+; 6-63       top (blank, uart processing)
+; 64-256     scanline (text area)
+; 257-309    bottom (blank, uart processing)
+; 310      D vsync short short
+; 311        vsync short short
+; 312        vsync short short
+
 .include "macros.s"
 
 .macro zero
@@ -49,6 +62,7 @@
     whiteclear
 .endm
 
+    ; checks the line counter. if matching, set the new line function, else returns from subroutine
 .macro checkLineFunction count, function
     increment r24 counter
     cpi r24,\count
@@ -58,7 +72,7 @@
     setFunctionPointer lineFunction \function
 .endm
 
-.macro checkUart
+.macro checkUart            ; checks the UART buffer and adds any waiting byte to the circular buffer
     lds r24,192             ; UCSR0A & (1 << RXC0)) != 0
     sbrs r24,7
     rjmp 8f
@@ -74,7 +88,7 @@
 8:
 .endm
 
-.macro processUart
+.macro processUart               ; checks for data in the circular buffer and processes the next byte if it exists
     lds r20, uartWrite           ; keep write index in r20
     lds r22, uartRead            ; keep read index in r22
     cp r20,r22
@@ -89,7 +103,7 @@
     andi r22, 127
     sts uartRead, r22            ; inc and store uartRead;
 
-    call processChar
+    rcall processChar            ; call rather than inline this code
 9:
 .endm
 
@@ -131,7 +145,7 @@
     ld r20,X+                ; get reversed font bits
     ld r21,X+
     ld r22,X+
-    ld r23,X+                ; reserved
+    ld r23,X+                ; reserved - colour attributes?
 
     addressToY scanlinebuffer
 
@@ -177,89 +191,90 @@
 .endm
 
 processChar:                ; expect char in r19
-    cpi r19, 13             ; if char is 13 ignore
-    breq processCharReturn
-
+    sts lastChar, r19
     lds r18, cursorx
 
-    cpi r19, 10             ; if char is 10 clear line
-    breq newLine
-
-    cpi r18, 24             ; check for overflow
-    brne drawChar
-
-newLine:
-    clr r18                 ; new line
+    cpi r19, 10             ; Carriage Return
+    brne notCr
+    clr r18                 ; set cursorX to zero
     sts cursorx, r18
+    ret
+notCr:
+
+    cpi r19, 13             ; Line Feed
+    brne notLf
     increment r17 cursory
     incrementAndMask r17 31 rowoffset   ; rotate the view to keep up
+    rcall clearLine
     ret
-    ;rjmp postColIncrement   ; todo: fix this or brake it some more
+notLf:
 
-drawChar:
-    inc r18                  ; store incremented cursor x
-    sts cursorx, r18
-    dec r18
+    cpi r18, 24             ; check for line wrap
+    brne notWrap
+    clr r18
+    increment r17 cursory
+    incrementAndMask r17 31 rowoffset   ; rotate the view to keep up
+    rcall clearLine
+notWrap:
 
-postColIncrement:
     lds r25, cursory         ; row position in circular buffer
     lsl r25                  ; start the multiply in 8 bit land
     lsl r25
     lsl r25
-
     clr r24                  ; multiply up to 32 width char buffer
     lsl r25
     rol r24
     lsl r25
     rol r24
-
-    addressToX charbuffer
+    addressToX charbuffer+4 ; charbuffer + skip reverse bits
     addToX r25, r24         ; add cursor y offset to X
-
-    st X+, r16              ; clear reverse bits
-    st X+, r16
-    st X+, r16
-    st X+, r16
-
     addToX r18, r16         ; add column x to X
-
-    tst r18                 ; col zero?
-    brne skipClearLine
-
-    copyXtoY
-    call clearLineY
-
-skipClearLine:
     st X, r19
 
-processCharReturn:
+    inc r18                  ; increment and store cursor x
+    sts cursorx, r18
     ret
 
-clearLineY:
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16 ; 4
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16 ; 8
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16 ; 12
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16 ; 16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16 ; 20
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16
-    st Y+,r16 ; 24
+clearLine:                   ; clears row at cursor y including reverse bits
+    lds r25, cursory         ; row position in circular buffer
+    lsl r25                  ; start the multiply in 8 bit land
+    lsl r25
+    lsl r25
+    clr r24                  ; multiply up to 32 width char buffer
+    lsl r25
+    rol r24
+    lsl r25
+    rol r24
+    addressToX charbuffer
+    addToX r25, r24          ; add cursor y offset to X
+    st X+, r16               ; clear reverse bits
+    st X+, r16
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 0
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 4
+    st X+, r16
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 8
+    st X+, r16
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 12
+    st X+, r16
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 16
+    st X+, r16
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 20
+    st X+, r16
+    st X+, r16
+    st X+, r16
+    st X+, r16 ; 24
     ret
 
 renderScanline:
@@ -353,14 +368,18 @@ renderLower:
 
     checkLineFunction 53 renderVerticalSyncD  ; previous loop of 256 + 56 = line 312
 
+    lds r24, lastChar   ; skip hacky flash cursor while receiving non zero chars
+    tst r24
+    brne noHacky
     increment r24 frame
-    lsr r24            ; hacky flash cursor
+    lsr r24             ; hacky flash cursor at fixed position under READY
     lsr r24
     lsr r24
     lsr r24
     andi r24, 1
     sts charbuffer+(32*23), r24
 
+noHacky:
     ret
 
     .global renderVerticalSync

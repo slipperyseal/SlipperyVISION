@@ -24,6 +24,7 @@ uint8_t rowoffset;
 uint8_t cursorx;
 uint8_t cursory;
 uint8_t frame;
+uint8_t lastChar;
 
 void invertLine(uint8_t y) {
     uint8_t * b = &charbuffer[y*32];

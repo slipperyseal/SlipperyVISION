@@ -2,7 +2,7 @@
 
 ### A PAL signal generator and VT Terminal for the AVR microcontroller.
 
-This project implements a true text mode with circular text buffer.
+This project implements a true text mode with reverse mode and circular text buffer.
 
 But wait, there's more..
 
@@ -19,6 +19,7 @@ In development:
 - Component colour video
 - Capacitance effects
 - Printed Circuit Board
+- Escape code handling
 
 ![SlipperyVISION](http://kamome.slipperyseal.net/slipperyvision.jpg)
 

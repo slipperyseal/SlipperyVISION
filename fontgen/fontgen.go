@@ -53,20 +53,24 @@ func main() {
     for line := 0; line < 8; line++ {
         if line == 0 {
             fmt.Println("    .balign 512")
-            fmt.Println("    .global fontdata");
-            fmt.Println("fontdata:");
+            fmt.Println("    .global fontdata")
+            fmt.Println("fontdata:")
         }
         fmt.Printf("    ; %s line %d\n", os.Args[1], line)
-        i := uint8(0)
+        ascii := uint8(0)
         for row := 0; row < h; row++ {
             for col := 0; col < w; col++ {
                 if col == 0 {
                     fmt.Print("    .ascii \"")
                 }
-                mcol, mrow := locate(i, col, row)
-                i++
+                mcol, mrow := locate(ascii)
+                ascii++
                 b := 0
                 for z := 0; z < 8; z++ {
+                    // rotate 90 counter clockwise
+                    //r, _, _, _ := src.At((mcol*8)+(7-line), (mrow*8)+z).RGBA()
+
+                    // regular orientation
                     r, _, _, _ := src.At((mcol*8)+z, (mrow*8)+line).RGBA()
                     if r > 100*256 {
                         b |= 1 << z
@@ -83,16 +87,17 @@ func main() {
     fmt.Println()
 }
 
-func locate(c uint8, col, row int) (x,y int) {
-    // spaces are "pass through"
-    if mapping[c] == ' ' {
-        return col, row
+func locate(ascii uint8) (x,y int) {
+    if ascii == 0 {
+        ascii = ' '
     }
     for x := 0; x < 16*16; x++ {
-        if mapping[x] == c {
+        if mapping[x] == ascii {
             row := x/16
             return x-(row*16), row
         }
     }
-    return 0, 2
+    // no match? pass through
+    row := ascii/16
+    return int(ascii - (row * 16)), int(row)
 }

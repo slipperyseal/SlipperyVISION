@@ -54,7 +54,7 @@ void writeUartString(char * string) {
 int main() {
     DDRB = 1;   // black level out
     DDRC = 1;   // white level out
-    DDRD = (1<<2);// | (1<<3);
+    DDRD = (1<<4) | (1<<6);
 
     // 64 microsecond ISR at 16mhz
     TCCR1A = 0;

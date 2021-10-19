@@ -32,20 +32,44 @@
      sbi 0x8, 0 ; PC0 = 1 (when PB0 = 1)
 .endm
 
+.macro yfx1on
+     cbi 0x8, 4 ; PC4
+.endm
+
+.macro yfx1off
+     sbi 0x8, 4 ; PC4
+.endm
+
 .macro cbon
-     sbi 0xb, 2
+     sbi 0xb, 4 ; PD4
 .endm
 
 .macro cboff
-     cbi 0xb, 2
+     cbi 0xb, 4 ; PD4
 .endm
 
 .macro cron
-     sbi 0xb, 3
+     sbi 0xb, 6 ; PD6
 .endm
 
 .macro croff
-     cbi 0xb, 3
+     cbi 0xb, 6 ; PD6
+.endm
+
+.macro cbfxon
+     sbi 0xa, 7 ; DDRD 7
+.endm
+
+.macro cbfxoff
+     cbi 0xa, 7 ; DDRD 7
+.endm
+
+.macro crfxon
+     sbi 0xa, 3 ; DDRD 3
+.endm
+
+.macro crfxoff
+     cbi 0xa, 3 ; DDRD 3
 .endm
 
 .macro connect
@@ -315,7 +339,7 @@ renderScanline:
     mapFont r22,6
     mapFont r22,7 ; 24
 
-    cbon
+    ;cbon
 
     addressToX scanlinebuffer
     renderByte
@@ -346,7 +370,7 @@ renderScanline:
     nop
     whiteclear
 
-    cboff
+    ;cboff
 
     checkUart
     checkLineFunction 0 renderLower
@@ -366,6 +390,28 @@ renderLower:
     checkUart
     processUart
 
+    ;delay4us
+    ;delay4us
+    ;delay4us
+    ;delay4us
+    ;cron
+    ;delay4us
+    ;crfxon
+    ;delay4us
+    ;cbon
+    ;delay4us
+    ;cbfxon
+    ;delay4us
+    ;croff
+    ;delay4us
+    ;crfxoff
+    ;delay4us
+    ;cboff
+    ;delay4us
+    ;cbfxoff
+    ;delay4us
+    ;crfxoff
+
     checkLineFunction 53 renderVerticalSyncD  ; previous loop of 256 + 56 = line 312
 
     lds r24, lastChar   ; skip hacky flash cursor while receiving non zero chars
@@ -384,11 +430,13 @@ noHacky:
 
     .global renderVerticalSync
 renderVerticalSync:     ; long long
-    zero
+    zero        ; long
     delay30us
-    black
+
+    black       ; notch
     delay2us
-    zero
+
+    zero        ; long
     delay30us
     black
 
@@ -396,13 +444,16 @@ renderVerticalSync:     ; long long
     ret
 
 renderVerticalSyncB:     ; long short
-    black
-    delay2us
-    zero
+    zero        ; long
     delay30us
-    black
+
+    black       ; notch
     delay2us
-    zero
+
+    zero        ; short
+    delay2us
+
+    black       ; cruizin
 
     checkUart
 
@@ -410,13 +461,16 @@ renderVerticalSyncB:     ; long short
     ret
 
 renderVerticalSyncC:       ; short short
-    black
+    zero        ; short
     delay2us
-    zero
+
+    black       ; cruizin
     delay30us
-    black
+
+    zero        ; short
     delay2us
-    zero
+
+    black       ; cruizin
 
     checkUart
 
@@ -424,13 +478,16 @@ renderVerticalSyncC:       ; short short
     ret
 
 renderVerticalSyncD:       ; short short
-    black
+    zero        ; short
     delay2us
-    zero
+
+    black       ; cruizin
     delay30us
-    black
+
+    zero        ; short
     delay2us
-    zero
+
+    black       ; cruizin
 
     checkUart
 

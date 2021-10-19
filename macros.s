@@ -90,20 +90,18 @@
 .endm
 
 .macro delay4us
-    delay1us
-    delay1us
-    delay1us
-    delay1us
+    delay2us
+    delay2us
 .endm
 
 .macro delay30us
     delay4us
     delay4us
     delay4us
+    delay4us ; 16
     delay4us
     delay4us
-    delay4us
-    delay4us
+    delay4us ; 28
     delay2us
 .endm
 

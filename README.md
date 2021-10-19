@@ -60,3 +60,9 @@ I accidentally left caps on the board and noticed it messing with the image, the
 put in circuit on purpose...
 
 ![SlipperyVISION](http://kamome.slipperyseal.net/slipperyvision-fx.jpg)
+
+Fuse settings (16mhz external, SPI)
+
+```
+-U lfuse:w:0xff:m -U hfuse:w:0xd9:m -U efuse:w:0xff:m
+```

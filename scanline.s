@@ -412,7 +412,7 @@ renderLower:
     ;delay4us
     ;crfxoff
 
-    checkLineFunction 53 renderVerticalSyncD  ; previous loop of 256 + 56 = line 312
+    checkLineFunction 54 renderVerticalSyncD  ; previous loop of 256 + 56 = line 312
 
     lds r24, lastChar   ; skip hacky flash cursor while receiving non zero chars
     tst r24
@@ -491,7 +491,7 @@ renderVerticalSyncD:       ; short short
 
     checkUart
 
-    checkLineFunction 56 renderVerticalSync  ; previous loop of 256 + 56 = line 312
+    checkLineFunction 57 renderVerticalSync  ; previous loop of 256 + 56 = line 312
     clear counter
     ret
 

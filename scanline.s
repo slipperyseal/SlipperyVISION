@@ -420,6 +420,7 @@ noHacky:
 
     .global renderVerticalSync
 renderVerticalSync:     ; long long
+    endofline
     zero        ; long
     delay30us
 
@@ -434,6 +435,7 @@ renderVerticalSync:     ; long long
     ret
 
 renderVerticalSyncB:     ; long short
+    endofline
     zero        ; long
     delay30us
 
@@ -451,6 +453,7 @@ renderVerticalSyncB:     ; long short
     ret
 
 renderVerticalSyncC:       ; short short
+    endofline
     zero        ; short
     delay2us
 
@@ -468,6 +471,7 @@ renderVerticalSyncC:       ; short short
     ret
 
 renderVerticalSyncD:       ; short short
+    endofline
     zero        ; short
     delay2us
 

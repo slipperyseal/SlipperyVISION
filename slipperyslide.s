@@ -6,8 +6,8 @@
     ; the ISR executes. it may only be 1 or 2 cycles but that's enough to skew the video.
     ; there seems to be no way to branch or jump without at least two cycles being used.
     ; to get around this, the main loop run a long sequence of single cycle instructions.
-    ; but it has to loop back the to start at some point. so what we do is clear a register and
-    ; wait for that value to change. the change will be the signal from the ISR that it's just
+    ; but it has to loop back the to start at some point. so what we do is clear a register within the ISR and
+    ; watch for that value to change in the main loop. the change will be the signal from the ISR that it's just
     ; returned. this is a good time to get to the top of the loop again.
     ; as conditional branches can only be +/- 64 instructions, we have to leap frog our way to the top or
     ; bottom of the loop (which does a long range jump to the top again), whichever is closer.

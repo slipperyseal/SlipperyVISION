@@ -16,6 +16,14 @@
 
 .include "macros.s"
 
+.macro endofline
+    cboff
+    croff
+    nop
+    nop
+    nop
+.endm
+
 .macro zero
      cbi 0x5, 0  ; PB0 = 0
 .endm
@@ -132,6 +140,7 @@
 .endm
 
 .macro doSync  ; 4.7 microseconds = (4*16) + 11.2 cycles
+    endofline
     zero
     delay4us
     nop
@@ -302,6 +311,7 @@ clearLine:                   ; clears row at cursor y including reverse bits
     ret
 
 renderScanline:
+    endofline
     zero          ; do sync but with some code hiding in there
     delay1us      ; tuned number nops + mapFontSetup = 4.7 microseconds
     delay1us
@@ -313,7 +323,7 @@ renderScanline:
     nop ; 6 - my scope told me to stop here
     mapFontSetup
     black
-    
+
     mapFont r20,0
     mapFont r20,1
     mapFont r20,2
@@ -322,6 +332,7 @@ renderScanline:
     mapFont r20,5
     mapFont r20,6
     mapFont r20,7 ; 8
+    cbon
     mapFont r21,0
     mapFont r21,1
     mapFont r21,2
@@ -339,8 +350,7 @@ renderScanline:
     mapFont r22,6
     mapFont r22,7 ; 24
 
-    ;cbon
-
+    cboff
     addressToX scanlinebuffer
     renderByte
     renderByte
@@ -369,8 +379,7 @@ renderScanline:
     nop
     nop
     whiteclear
-
-    ;cboff
+    cbon
 
     checkUart
     checkLineFunction 0 renderLower
@@ -378,40 +387,21 @@ renderScanline:
 
 renderUpper:
     doSync
+    delay4us
+    cbon
+
     checkUart
     processUart
-
     checkLineFunction 64 renderScanline
     ret
 
 renderLower:
     doSync
+    delay4us
+    cbon
 
     checkUart
     processUart
-
-    ;delay4us
-    ;delay4us
-    ;delay4us
-    ;delay4us
-    ;cron
-    ;delay4us
-    ;crfxon
-    ;delay4us
-    ;cbon
-    ;delay4us
-    ;cbfxon
-    ;delay4us
-    ;croff
-    ;delay4us
-    ;crfxoff
-    ;delay4us
-    ;cboff
-    ;delay4us
-    ;cbfxoff
-    ;delay4us
-    ;crfxoff
-
     checkLineFunction 54 renderVerticalSyncD  ; previous loop of 256 + 56 = line 312
 
     lds r24, lastChar   ; skip hacky flash cursor while receiving non zero chars

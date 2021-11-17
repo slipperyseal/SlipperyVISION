@@ -56,6 +56,25 @@ int main() {
     DDRC = 1;   // white level out
     DDRD = (1<<4) | (1<<6);
 
+    // make some noise
+    DDRB |= (1 << PB1) | (1 << PB2);
+    TCCR1B = 0;
+    TCNT1 = 0x0000;
+    ICR1 = 0x35ff;
+    OCR1A = 0x0800;
+    TCCR1A = (1 << COM1A1) | (0 << COM1A0) | (0 << WGM11) | (0 << WGM10);
+    TCCR1B = (1 << WGM13) | (0 << WGM12) | (0 << CS12) | (0 << CS11 ) | (1 << CS10);
+
+    _delay_ms(100);
+    ICR1 = 0x45ff;
+    _delay_ms(100);
+    ICR1 = 0x35ff;
+    _delay_ms(100);
+    ICR1 = 0x25ff;
+    _delay_ms(100);
+    ICR1 = 0x15ff;
+    _delay_ms(100);
+
     // 64 microsecond ISR at 16mhz
     TCCR1A = 0;
     TCCR1B = 0;

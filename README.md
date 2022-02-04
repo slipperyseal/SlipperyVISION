@@ -10,18 +10,18 @@ But wait, there's more..
 - Commodore 64 font
 - "Hardware" reverse character mode.
 - Receives and renders ASCII via UART (serial) 
+- Component colour channels
 
 This project is based on the ATmega328p. Other AVRs may be supported which have compatible
 instructions, timing characteristics, memory etc, etc.
 
 In development:
 
-- Component colour video
 - Capacitance effects
 - Printed Circuit Board
 - Escape code handling
 
-![SlipperyVISION](http://kamome.slipperyseal.net/slipperyvision.jpg)
+![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision.jpg)
 
 The AVR microcontroller cannot natively generate an old school television video signal, but using some minimal
 hardware (some diodes and resistors), and some precisely timed code, we can generate a signal like a proper
@@ -49,17 +49,23 @@ sends these bits to a GPIO pin at just the right rate to render the image to the
 The AVR runs at 16 million cycles per second (16mhz). If a single one cycle instruction was to be added or removed
 in this critical code, pixels would be the wrong dimensions.
 
-![SlipperyVISION](http://kamome.slipperyseal.net/slipperyvision-blue.jpg)
+When television first began it was black and white. The basic video signal represents the brightness of the image displayed.
+This is referred to as luminance. The colour aspect is represented by two separate signals Cr and Cb, component red and blue.
+SlipperyVISION con plug straight into TVs which support the three compoenent video plugs, plus the two audio.
+Composite video is where the lumunance and two colour singals are combined into one plug. SlipperyVISION doesn't support
+this, but due to the way composite works, you can plug just the luminance cable into a composite input and get a black and white image only.
 
-Stand by for colour support and the PCB. We have colour working in various ways, by adding two more similar channels (Cr Cb)
+![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision-blue.jpg)
+
+Colour is working in various ways, by adding two more similar channels (Cr Cb)
 which can be connected to a Y Cr Cb (component) compatible TV or device.
 
-![SlipperyVISION](http://kamome.slipperyseal.net/slipperyvision-autopak-pcb.png)
+![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision-autopak-pcb.png)
 
 I accidentally left caps on the board and noticed it messing with the image, then decided I could have capacitors
 put in circuit on purpose...
 
-![SlipperyVISION](http://kamome.slipperyseal.net/slipperyvision-fx.jpg)
+![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision-fx.jpg)
 
 Fuse settings (16mhz external, SPI)
 

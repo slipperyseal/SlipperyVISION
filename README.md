@@ -21,7 +21,7 @@ In development:
 - Printed Circuit Board
 - Escape code handling
 
-![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision.jpg)
+![SlipperyVISION](https://github.com/slipperyseal/SlipperyVISION/blob/main/doc/slipperyvision.jpg)
 
 The AVR microcontroller cannot natively generate an old school television video signal, but using some minimal
 hardware (some diodes and resistors), and some precisely timed code, we can generate a signal like a proper
@@ -55,17 +55,17 @@ SlipperyVISION con plug straight into TVs which support the three compoenent vid
 Composite video is where the lumunance and two colour singals are combined into one plug. SlipperyVISION doesn't support
 this, but due to the way composite works, you can plug just the luminance cable into a composite input and get a black and white image only.
 
-![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision-blue.jpg)
+![SlipperyVISION](https://github.com/slipperyseal/SlipperyVISION/blob/main/doc/slipperyvision-blue.jpg)
 
 Colour is working in various ways, by adding two more similar channels (Cr Cb)
 which can be connected to a Y Cr Cb (component) compatible TV or device.
 
-![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision-autopak-pcb.png)
+![SlipperyVISION](https://github.com/slipperyseal/SlipperyVISION/blob/main/doc/slipperyvision-autopak-pcb.png)
 
 I accidentally left caps on the board and noticed it messing with the image, then decided I could have capacitors
 put in circuit on purpose...
 
-![SlipperyVISION](https://storage.googleapis.com/kyoto.catchpole.net/slipperyvision-fx.jpg)
+![SlipperyVISION](https://github.com/slipperyseal/SlipperyVISION/blob/main/doc/slipperyvision-fx.jpg)
 
 Fuse settings (16mhz external, SPI)
 
